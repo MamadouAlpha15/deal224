@@ -20,8 +20,10 @@
 
             @endauth
             @guest
-                <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Se connecter</a>
-                <a href="{{ route('register') }}" class="btn btn-primary">S'inscrire</a>
+                <div class="d-flex flex-column flex-md-row gap-2">
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary">Se connecter</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">S'inscrire</a>
+                </div>
             @endguest
         </div>
     </div>
@@ -141,6 +143,8 @@
     width: 8%; /* augmente la zone cliquable */
 }
     }
+
+    
 </style>
 @endpush
 

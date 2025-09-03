@@ -13,7 +13,8 @@ class BoostPayment extends Model
         'start_date',
         'end_date',
         'status',
-        'payement_proof',
+        'payment_proof',
+        'reference',
     ];
 
     public function user()

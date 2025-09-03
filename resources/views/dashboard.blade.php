@@ -7,9 +7,9 @@
         <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
     </div>
   <div class="d-flex justify-content-center my-4">
-    <!--<a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
+    <a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
         Booster mes annonces
-    </a>  !-->
+    </a>  
 </div>
 
 

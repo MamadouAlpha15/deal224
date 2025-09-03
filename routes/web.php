@@ -37,6 +37,13 @@ Route::get('/admin/boosts', [BoostController::class, 'adminDashboard'])->name('s
     //Route pour approuver le payement
 
     Route::post('/admin/boosts/{id}/approve', [BoostController::class, 'approvePayment'])->name('superadmin.boost.approve');
+    Route::delete('/admin/boosts/{boostPayment}', [BoostController::class, 'deletePayment'])
+    ->name('superadmin.boost.delete');
+
+    // Route pour booster toutes les annonces d'un utilisateur
+Route::post('/admin/boosts/all/{user}', [BoostController::class, 'boostAllUserAds'])
+    ->name('superadmin.boost.all');
+
 });
 
 

@@ -116,6 +116,11 @@
             </div>
         @endforelse
     </div>
+
+    {{-- Pagination --}}
+<div class="mt-4 d-flex justify-content-center">
+    {{ $ads->links() }}
+</div>
 </div>
 @push('styles')
 <style>

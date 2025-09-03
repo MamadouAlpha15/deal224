@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Demander un boost pour vos annonces</h2>
+    <h2>Demander un boost pour toutes vos annonces</h2>
 
     @if(session('success'))
         <div style="color:green;">
@@ -23,9 +23,19 @@
     <form action="{{ route('boost.pay') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div>
-            <label for="ads_count">Nombre d'annonces à booster :</label>
-            <input type="number" name="ads_count" id="ads_count" min="1" max="10" required>
+        <div style="margin-top:10px;">
+            <strong>Prix total :</strong>
+            <span id="totalPrice">5000 GNF par annonce</span>
+        </div>
+
+        <div style="margin-top:10px;">
+            <strong>Référence unique :</strong>
+            <span id="reference">{{ $reference }}</span>
+        </div>
+
+        <div style="margin-top:10px;">
+            <p><strong>Paiement :</strong> 5000 GNF par annonce par jour. Déposez via Orange Money sur <strong>622704058</strong> et téléversez la capture ci-dessous.</p>
+            <p>Toutes vos annonces seront visibles en haut pendant 24h. Pour prolonger, réabonnez-vous.</p>
         </div>
 
         <div>
@@ -38,15 +48,11 @@
             <img id="preview" src="#" alt="Capture sélectionnée" style="max-width:200px; display:none;">
         </div>
 
-        <div>
-            <p>Envoyez le paiement au numéro : <strong>622704058</strong> et téléversez une capture ci-dessus.</p>
-        </div>
-
-        <button type="submit">Demander le boost</button>
+        <button type="submit">Booster toutes mes annonces</button>
     </form>
 </div>
 
-<!-- Script pour afficher l'image sélectionnée -->
+<!-- Script pour prévisualiser l'image -->
 <script>
 document.getElementById('payment_proof').addEventListener('change', function(event){
     const [file] = this.files;

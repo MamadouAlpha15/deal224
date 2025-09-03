@@ -12,10 +12,36 @@ class AdController extends Controller
 {
     // 🔹 Affiche toutes les annonces de l'utilisateur connecté
     public function index()
-    {
-        $ads = Auth::user()->ads()->with('images')->latest()->get(); // Récupère les annonces avec les images les plus récentes
-        return view('ads.index', compact('ads')); // Affiche la vue avec les annonces
+{
+    $perPage = 20;
+
+    if (config('boost.auto_boost')) {
+        // Boost automatique gratuit actif : toutes les annonces boostées apparaissent en haut avec rotation
+        $ads = Auth::user()->ads() // récupère seulement les annonces de l'utilisateur connecté
+    ->with('images')
+            ->orderByDesc('boosted_until') // boostées en haut
+            ->orderBy('last_seen_at')      // rotation équitable
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+    } else {
+        // Boost automatique désactivé : seules les annonces payantes sont boostées
+        $ads = Ad::with('images')
+            ->where('boosted_until', '>', now()) // seulement boost payant encore actif
+            ->orderBy('last_seen_at')            // rotation entre payants
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
     }
+     // --- ROTATION : met à jour la dernière fois vue ---
+    foreach ($ads as $ad) {
+        $ad->last_seen_at = now();
+        $ad->save();
+    }
+
+    return view('ads.index', compact('ads'));
+}
+
+
+
 
     // 🔹 Affiche le formulaire de création d'une annonce
     public function create()
@@ -34,7 +60,7 @@ class AdController extends Controller
             'phone' => 'nullable|string|max:20', // Numéro de téléphone optionnel, max 20 caractères
             'whatsapp' => 'required|string|max:20', // Numéro WhatsApp obligatoire, max 20 caractères
             'location' => 'nullable|string|max:255', // Localisation optionnelle, max 255 caractères
-            'images.*' => 'nullable|image|max:2048', // Chaque image doit être valide et max 2 Mo
+            'images.*' => 'nullable|image|max:5120', // Chaque image doit être valide et max 5 Mo
         ]);
 
         // Ajoute l'ID de l'utilisateur connecté à l'annonce
