@@ -14,6 +14,7 @@ class BoostPayment extends Model
         'end_date',
         'status',
         'payment_proof',
+        'depot',
         'reference',
     ];
 
@@ -21,4 +22,10 @@ class BoostPayment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function ad()
+{
+    return $this->belongsTo(Ad::class);
+}
+
 }

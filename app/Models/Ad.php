@@ -39,4 +39,15 @@ class Ad extends Model // Déclare le modèle Ad qui hérite de la classe Eloque
         return $this->hasMany(AdImage::class);
         // 'hasMany' signifie qu’une annonce peut avoir plusieurs images
     }
+
+
+    /**
+     * 🔗 Relation : Une annonce peut avoir plusieurs paiements de boost (1:N)
+     * Cela permet d’accéder aux paiements de boost liés à une annonce avec $ad->boostPayments
+     */
+public function boostPayments()
+{
+    return $this->hasMany(BoostPayment::class, 'user_id', 'user_id');
+}
+
 }

@@ -23,6 +23,12 @@
    
     <div class="row g-4">
         @forelse ($ads as $ad)
+        @if($lastPayment)
+   <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-sm btn-info mt-2">
+    💬 Chat
+</a>
+
+@endif
             <div class="col-sm-6 col-md-4">
                 <div class="card h-100 shadow-sm border-0">
                     @if($ad->images->count())

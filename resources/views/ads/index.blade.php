@@ -8,6 +8,7 @@
         <h2 class="mb-0">📋 Mes annonces</h2>
         <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
     </div>
+      
 
     {{-- ✅ Message de succès après modification ou suppression --}}
     @if(session('success'))
@@ -17,6 +18,16 @@
     {{-- 🎯 Grille des annonces --}}
     <div class="row g-4">
         @forelse ($ads as $ad)
+        @php
+    $lastPayment = $ad->boostPayments->last();
+@endphp
+
+@if($lastPayment)
+   <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-sm btn-info mt-2">
+    💬 Chat
+</a>
+
+@endif
             <div class="col-sm-6 col-md-4">
                 <div class="card h-100 shadow-sm border-0">
                     

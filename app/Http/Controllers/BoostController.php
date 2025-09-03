@@ -50,6 +50,7 @@ class BoostController extends Controller
     'amount' => $adsCount * 5000,       // prix total
     'status' => 'pending',
     'payment_proof' => $proofPath,
+    'depot' => $request->input('depot'),
     'start_date' => now(),
     'end_date' => now()->addDay(),
     'reference' => $reference,
@@ -114,4 +115,26 @@ class BoostController extends Controller
 
         return back()->with('success', 'Demande de boost supprimée.');
     }
+
+
+    /**
+ * Valider tous les paiements en attente
+ */
+public function approveAllPending()
+{
+    $payments = BoostPayment::where('status','pending')->get();
+    foreach($payments as $payment){
+        $payment->status = 'paid';
+        $payment->save();
+
+        $user = $payment->user;
+        $adsToBoost = $user->ads()->orderByDesc('created_at')->take($payment->ads_count)->get();
+        foreach ($adsToBoost as $ad) {
+            $ad->boosted_until = now()->addDay();
+            $ad->save();
+        }
+    }
+    return back()->with('success','Tous les paiements en attente ont été validés.');
+}
+
 }
