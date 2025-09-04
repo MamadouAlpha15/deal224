@@ -12,7 +12,7 @@ Route::get('/dashboard', function () {
     $userId = Auth::id();
 
     // Toutes les annonces de l'utilisateur
-    $ads = Ad::where('user_id', $userId)->latest()->get();
+    $ads = Ad::where('user_id', $userId)->latest()->paginate(20);
 
     // Dernier paiement
     $lastPayment = BoostPayment::where('user_id', $userId)->latest()->first();

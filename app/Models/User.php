@@ -66,4 +66,9 @@ class User extends Authenticatable // 🔹 La classe User hérite d’Authentica
     public function Admin(){
         return $this->role === 'admin';
     }
+
+     public function boostPayments()
+    {
+        return $this->hasMany(BoostPayment::class);
+    }
 }

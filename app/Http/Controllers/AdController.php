@@ -11,14 +11,15 @@ use App\Models\AdImage; // Modèle "AdImage" (image d'une annonce)
 class AdController extends Controller
 {
     // 🔹 Affiche toutes les annonces de l'utilisateur connecté
-    public function index()
+ public function index()
 {
     $perPage = 20;
+    $user = Auth::user();
 
     if (config('boost.auto_boost')) {
         // Boost automatique gratuit actif : toutes les annonces boostées apparaissent en haut avec rotation
-        $ads = Auth::user()->ads() // récupère seulement les annonces de l'utilisateur connecté
-    ->with('images')
+        $ads = $user->ads()
+            ->with('images')
             ->orderByDesc('boosted_until') // boostées en haut
             ->orderBy('last_seen_at')      // rotation équitable
             ->orderByDesc('created_at')
@@ -31,13 +32,17 @@ class AdController extends Controller
             ->orderByDesc('created_at')
             ->paginate($perPage);
     }
-     // --- ROTATION : met à jour la dernière fois vue ---
+
+    // --- ROTATION : met à jour la dernière fois vue ---
     foreach ($ads as $ad) {
         $ad->last_seen_at = now();
         $ad->save();
     }
 
-    return view('ads.index', compact('ads'));
+    // Récupère le dernier paiement boost pour le bouton Chat
+    $lastPayment = $user->boostPayments()->latest()->first();
+
+    return view('ads.index', compact('ads', 'lastPayment'));
 }
 
 
@@ -60,7 +65,7 @@ class AdController extends Controller
             'phone' => 'nullable|string|max:20', // Numéro de téléphone optionnel, max 20 caractères
             'whatsapp' => 'required|string|max:20', // Numéro WhatsApp obligatoire, max 20 caractères
             'location' => 'nullable|string|max:255', // Localisation optionnelle, max 255 caractères
-            'images.*' => 'nullable|image|max:5120', // Chaque image doit être valide et max 5 Mo
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
         ]);
 
         // Ajoute l'ID de l'utilisateur connecté à l'annonce
@@ -107,7 +112,7 @@ class AdController extends Controller
             'whatsapp' => 'required|string|max:20',
             'location' => 'nullable|string|max:255',
             // Les images sont optionnelles, mais si fournies, doivent être valides
-            'images.*' => 'nullable|image|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
         ]);
 
         $ad = Ad::findOrFail($id); // Récupère l'annonce
@@ -165,22 +170,30 @@ class AdController extends Controller
   public function acceuil(Request $request)
 {
     $query = $request->input('q');
+    $category = $request->input('category'); // récupère la catégorie sélectionnée
 
     // Détecte le driver DB
     $nowFunction = \DB::getDriverName() === 'sqlite' ? 'CURRENT_TIMESTAMP' : 'NOW()';
 
     $ads = Ad::when($query, function ($q) use ($query) {
-                return $q->where('title', 'like', "%$query%")
-                         ->orWhere('description', 'like', "%$query%");
+                return $q->where(function($sub) use ($query) {
+                    $sub->where('title', 'like', "%$query%")
+                        ->orWhere('description', 'like', "%$query%");
+                });
+            })
+            ->when($category, function ($q) use ($category) {
+                return $q->where('category', $category); // filtre par catégorie si choisi
             })
             ->with('images')
             ->orderByRaw("CASE WHEN boosted_until >= $nowFunction THEN 1 ELSE 0 END DESC") // annonces boostées en premier
             ->orderByDesc('boosted_until') // puis les plus récentes boostées
             ->orderByDesc('created_at') // ensuite annonces normales par date
-            ->get();
+            ->paginate(30)
+            ->withQueryString(); // conserve les filtres dans la pagination
 
-    return view('welcome', compact('ads', 'query'));
+    return view('welcome', compact('ads', 'query', 'category'));
 }
+
 
     // 🔹 Affiche les détails d'une annonce
     public function show(Ad $ad)

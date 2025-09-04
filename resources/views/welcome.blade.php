@@ -3,11 +3,14 @@
 @section('content')
 <div class="container">
     <form method="GET" action="{{ route('home') }}" class="mb-4">
-        <div class="input-group">
+    <div class="row g-2">
+        <div class="col-md-4">
             <input type="text" name="q" class="form-control" placeholder="Rechercher une annonce..." value="{{ $query ?? '' }}">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
         </div>
-    </form>
+
+        
+</form>
+
 
     <div class="d-flex justify-content-between align-items-center py-3">
         <h2>🛒 Dernières annonces</h2>
@@ -97,6 +100,10 @@
                 </div>
             @endforeach
         </div>
+        <div class="d-flex justify-content-center">
+    {{ $ads->withQueryString()->links() }}
+</div>
+        
     @else
         <div class="alert alert-warning text-center">
             @if($query)

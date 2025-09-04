@@ -14,15 +14,23 @@ class BoostController extends Controller
     /**
      * Affiche le formulaire pour demander un boost
      */
-   public function index()
+  public function index()
 {
-    $latestPayment = BoostPayment::where('user_id', Auth::id())->latest()->first();
-    $user = Auth::user();
-    $adsCount = $user->ads()->count(); // nombre d'annonces disponibles pour l'utilisateur
-    $reference = strtoupper(Str::random(10)); // référence unique affichée à l'utilisateur
+    $user = Auth::user(); // Récupère l'utilisateur connecté
 
-    return view('boost.index', compact('adsCount', 'reference'));
+    // Nombre d'annonces de l'utilisateur
+    $adsCount = $user->ads()->count(); 
+
+    $pricePerAd = 5000; // Prix par annonce
+    $totalPrice = $adsCount * $pricePerAd; // Calcul du montant total
+
+    // Génération d'une référence unique
+    $reference = strtoupper(Str::random(10));
+
+    // Envoie tout à la vue
+    return view('boost.index', compact('adsCount', 'pricePerAd', 'totalPrice', 'reference'));
 }
+
     /**
      * Soumission de la demande de boost
      */

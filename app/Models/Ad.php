@@ -12,6 +12,7 @@ class Ad extends Model // Déclare le modèle Ad qui hérite de la classe Eloque
      */
     protected $fillable = [
         'title',       // Titre de l’annonce
+        'category',    // Catégorie de l’annonce
         'description', // Description de l’annonce
         'price',       // Prix de l’annonce
         'phone',       // Numéro de téléphone de l'annonceur

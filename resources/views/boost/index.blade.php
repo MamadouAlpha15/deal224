@@ -35,13 +35,21 @@
 
         <div style="margin-top:10px;">
             <p><strong>Paiement :</strong> 5000 GNF par annonce par jour. Déposez via Orange Money sur <strong>622704058</strong> et téléversez la capture ci-dessous.</p>
-            <p>Toutes vos annonces seront visibles en haut pendant 24h. Pour prolonger, réabonnez-vous.</p>
-        </div>
-
-        <div>
+             <div>
             <label for="payment_proof">Capture Orange Money :</label>
             <input type="file" name="payment_proof" id="payment_proof" accept="image/*" required>
         </div>
+            <p>Toutes vos annonces seront visibles en haut pendant 24h. Pour prolonger, réabonnez-vous.</p>
+        </div>
+
+        <div style="margin-top:10px;">
+    <strong>Vous avez :</strong> {{ $adsCount }} annonce(s)<br>
+    <strong>Prix par annonce :</strong> {{ number_format($pricePerAd, 0, ',', ' ') }} GNF<br>
+    <strong>Total à payer :</strong> <span id="totalPrice">{{ number_format($totalPrice, 0, ',', ' ') }} GNF</span>
+</div>
+
+
+       
 
         <!-- Preview de l'image -->
         <div style="margin-top:10px;">

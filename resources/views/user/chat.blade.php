@@ -44,4 +44,5 @@
         <p class="text-muted">Vous ne pouvez pas répondre pour l’instant.</p>
     @endif
 </div>
+<a href="{{ route('dashboard') }}" class="btn btn-warning">retrour a mon interface</a>
 @endsection
