@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+<form action="{{ route('superadmin.boost') }}" method="GET" class="mb-3 d-flex gap-2">
+    <input type="text" name="q" class="form-control" placeholder="Tapez le numéro de dépôt" value="{{ request('q') }}">
+    <button class="btn btn-primary" type="submit">Rechercher</button>
+</form>
+
 <div class="container">
 
     <!-- ======================= -->
@@ -158,9 +163,21 @@
                                     <button class="btn btn-sm btn-success">Booster toutes les annonces</button>
                                 </form>
                             </td>
+
+                              
                         </tr>
                     @endforeach
                 </tbody>
+               <!-- Bouton global pour supprimer tous les boosts confirmés -->
+<form action="{{ route('superadmin.boost.deleteAllConfirmed') }}" method="POST" class="mb-3">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger"
+        onclick="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer tous les boosts confirmés ?')">
+        Supprimer tous les boosts confirmés
+    </button>
+</form>
+
             </table>
         </div>
 

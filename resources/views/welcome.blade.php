@@ -70,8 +70,20 @@
                                  class="card-img-top" 
                                  style="height: 200px; object-fit: cover;">
                         @endif
-
-                        <div class="card-body">
+                                     
+                        <a href="{{route('user.show',$ad->user->id)}}"> <div class="card-body d-flex flex-column ">
+                        {{-- PHOTO DE PROFIL en rond, positionnée en haut à gauche --}}
+    <div style="position: absolute; top: 5px; right: 8px; z-index: 10;">
+        @if($ad->profile_photo)
+            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
+                 alt="Profil" 
+                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @else
+            <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                 alt="Profil" 
+                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @endif
+    </div> </a>
                             <h5 class="card-title">{{ $ad->title }}</h5>
                             <p class="card-text" style="min-height: 80px;">{{ Str::limit($ad->description, 100) }}</p>
                             <p class="fw-bold text-primary">{{ number_format($ad->price, 0, ',', ' ') }} GNF</p>

@@ -74,6 +74,17 @@ Route::delete('/user/boost/message/{message}', [MessageController::class, 'delet
 Route::delete('/user/boost/{payment}/messages', [MessageController::class, 'deleteAllMessages'])
     ->name('messages.deleteAll');
 
+
+    Route::get('/user/unread-messages', [MessageController::class, 'unreadMessages'])
+     ->middleware('auth')
+     ->name('user.unread-messages');
+
+Route::delete('/superadmin/boost/delete-all-confirmed', [BoostController::class, 'deleteAllConfirmedBoosts'])
+    ->name('superadmin.boost.deleteAllConfirmed');
+
+  // Page profil utilisateur avec toutes ses annonces
+
+
 });
 
 
@@ -83,6 +94,7 @@ require __DIR__.'/auth.php';
 
 Route::get('/', [AdController::class, 'acceuil'])->name('home'); // Page d'accueil avec les annonces
 Route::get('annonces/{ad}', [AdController::class, 'show'])->name('annonces.show');
+Route::get('/user/{id}', [App\Http\Controllers\UserController::class, 'show'])->name('user.show');
 
 
 

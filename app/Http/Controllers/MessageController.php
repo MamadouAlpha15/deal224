@@ -48,6 +48,11 @@ class MessageController extends Controller
         ->orderBy('created_at')
         ->get();
 
+        // Marquer tous les messages du superadmin comme lus
+    BoostMessage::where('boost_payment_id', $paymentId)
+        ->where('user_id', '!=', auth()->id()) // messages venant du superadmin
+        ->update(['read' => true]);
+
     return view('user.chat', compact('payment', 'messages'));
 }
 
@@ -69,6 +74,7 @@ public function userReply(Request $request, $paymentId)
         'message' => $request->message,
         
     ]);
+     
     if(preg_match('/\d{6,}/', $request->message, $matches)) {
     $payment = BoostPayment::find($paymentId);
     $payment->depot = $matches[0]; // met à jour le dépôt dans la DB
@@ -90,5 +96,23 @@ public function deleteAllMessages($paymentId)
 
     return back()->with('success', 'Tous les messages ont été supprimés.');
 }
+
+
+public function unreadMessages()
+{
+    $user = auth()->user();
+    $lastPayment = $user->boostPayments()->latest()->first();
+
+    $count = 0;
+    if($lastPayment) {
+        $count = BoostMessage::where('boost_payment_id', $lastPayment->id)
+            ->where('user_id', '!=', $user->id) // messages venant du superadmin
+            ->where('read', false)
+            ->count();
+    }
+
+    return response()->json(['count' => $count]);
+}
+
    
 }

@@ -32,7 +32,7 @@
 
         <div>
             <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+            <!--   <img src="{{asset('image/') }}" alt="Mon logo" width="80"> !-->
             </a>
         </div>
 

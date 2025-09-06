@@ -70,13 +70,32 @@ class BoostController extends Controller
     /**
      * Tableau de bord pour l'admin
      */
-    public function adminDashboard()
-    {
-        $pendingPayments = BoostPayment::with('user')->where('status', 'pending')->latest()->get();
-        $paidPayments = BoostPayment::with('user')->where('status', 'paid')->latest()->get();
+   public function adminDashboard(Request $request)
+{
+    $depotNumber = $request->input('q'); // récupère le numéro de dépôt tapé dans la barre de recherche
 
-        return view('admin.boosts', compact('pendingPayments', 'paidPayments'));
-    }
+    // Paiements en attente (pending)
+    $pendingPayments = BoostPayment::with('user')
+                        ->where('status', 'pending')
+                        ->when($depotNumber, function($query) use ($depotNumber){
+                            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
+                        })
+                        ->latest()
+                        ->get();
+
+    // Paiements confirmés (paid)
+    $paidPayments = BoostPayment::with('user')
+                        ->where('status', 'paid')
+                        ->when($depotNumber, function($query) use ($depotNumber){
+                            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
+                        })
+                        ->latest()
+                        ->get();
+
+    // Passe les résultats à la vue
+    return view('admin.boosts', compact('pendingPayments', 'paidPayments'));
+}
+
 
     /**
      * Valider un paiement et booster les annonces correspondantes
@@ -145,4 +164,28 @@ public function approveAllPending()
     return back()->with('success','Tous les paiements en attente ont été validés.');
 }
 
+
+/**
+ * Supprimer tous les boosts confirmés (paiements avec status 'paid')
+ */
+public function deleteAllConfirmedBoosts(): \Illuminate\Http\RedirectResponse
+{
+    $confirmedPayments = BoostPayment::where('status', 'paid')->get();
+
+    foreach ($confirmedPayments as $payment) {
+        $payment->delete(); // supprime uniquement les boosts confirmés
+    }
+
+    return back()->with('success', 'Tous les boosts confirmés ont été supprimés.');
 }
+
+}
+/**
+ * Pour modifier le prix du boostage, il faut changer la variable $pricePerAd.
+ * Elle se trouve dans la méthode index() :
+ *   $pricePerAd = 5000;
+ * Modifiez cette valeur pour ajuster le prix du boost par annonce.
+ * Assurez-vous aussi de mettre à jour la multiplication dans boostPay() :
+ *   'amount' => $adsCount * 5000,
+ * Si vous souhaitez centraliser ce prix, créez une constante ou une méthode statique dans un modèle ou config.
+ */

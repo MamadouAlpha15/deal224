@@ -24,6 +24,20 @@
           
         @csrf {{-- 🔐 Protection CSRF obligatoire dans tous les formulaires --}}
 
+        {{-- Champ photo de profil --}}
+<div class="mb-3">
+    <label class="form-label">Photo de profil</label>
+    <input type="file" 
+           name="profile_photo" 
+           class="form-control" 
+           accept="image/*"> {{-- ✅ N'accepte que les images --}}
+    
+    {{-- Aperçu --}}
+    <div id="profile-preview" class="mt-2">
+        <img id="profile-img" src="#" alt="Aperçu" style="display:none; width:100px; height:100px; object-fit:cover; border-radius:50%;">
+    </div>
+</div>
+
         {{-- Champ titre --}}
         <div class="mb-3">
             <label class="form-label">Titre</label>
@@ -155,6 +169,23 @@
         newInput.files = dataTransfer.files; // 📎 Y attache les fichiers
 
         e.target.appendChild(newInput); // 📌 Ajoute au formulaire
+    });
+
+
+     // Aperçu pour la photo de profil
+    const profileInput = document.querySelector('input[name="profile_photo"]');
+    const profileImg = document.getElementById('profile-img');
+
+    profileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            profileImg.src = e.target.result;
+            profileImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     });
 </script>
 @endsection

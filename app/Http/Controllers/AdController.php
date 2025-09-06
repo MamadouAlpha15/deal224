@@ -11,35 +11,28 @@ use App\Models\AdImage; // Modèle "AdImage" (image d'une annonce)
 class AdController extends Controller
 {
     // 🔹 Affiche toutes les annonces de l'utilisateur connecté
- public function index()
+public function index()
 {
     $perPage = 20;
     $user = Auth::user();
 
-    if (config('boost.auto_boost')) {
-        // Boost automatique gratuit actif : toutes les annonces boostées apparaissent en haut avec rotation
-        $ads = $user->ads()
-            ->with('images')
-            ->orderByDesc('boosted_until') // boostées en haut
-            ->orderBy('last_seen_at')      // rotation équitable
-            ->orderByDesc('created_at')
-            ->paginate($perPage);
-    } else {
-        // Boost automatique désactivé : seules les annonces payantes sont boostées
-        $ads = Ad::with('images')
-            ->where('boosted_until', '>', now()) // seulement boost payant encore actif
-            ->orderBy('last_seen_at')            // rotation entre payants
-            ->orderByDesc('created_at')
-            ->paginate($perPage);
+    // Récupère toutes les annonces de l'utilisateur, boostées ou non
+    $adsQuery = $user->ads()->with('images')
+        ->orderBy('boosted_until', 'desc') // boostées en haut
+        ->orderByDesc('created_at');       // puis les plus récentes
+
+    $ads = $adsQuery->paginate($perPage);
+
+    // Met à jour last_shown_at uniquement pour les boostées encore valides
+    $boostedIds = $ads->filter(fn($ad) => $ad->boosted_until && $ad->boosted_until >= now())
+                       ->pluck('id')
+                       ->toArray();
+
+    if (!empty($boostedIds)) {
+        Ad::whereIn('id', $boostedIds)->update(['last_shown_at' => now()]);
     }
 
-    // --- ROTATION : met à jour la dernière fois vue ---
-    foreach ($ads as $ad) {
-        $ad->last_seen_at = now();
-        $ad->save();
-    }
-
-    // Récupère le dernier paiement boost pour le bouton Chat
+    // Dernier paiement boost pour le chat
     $lastPayment = $user->boostPayments()->latest()->first();
 
     return view('ads.index', compact('ads', 'lastPayment'));
@@ -66,10 +59,18 @@ class AdController extends Controller
             'whatsapp' => 'required|string|max:20', // Numéro WhatsApp obligatoire, max 20 caractères
             'location' => 'nullable|string|max:255', // Localisation optionnelle, max 255 caractères
             'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
+            'profile_photo'=>'image|mimes:jpeg,png,jpg|max:51200',
         ]);
 
         // Ajoute l'ID de l'utilisateur connecté à l'annonce
         $validated['user_id'] = Auth::id();
+
+        // ✅ Stocke la photo de profil si elle existe
+    if ($request->hasFile('profile_photo')) {
+        $path = $request->file('profile_photo')->store('profile_photos', 'public');
+        $validated['profile_photo'] = $path;
+    }
+     
 
         // Création de l'annonce
         $ad = Ad::create($validated);
@@ -81,6 +82,9 @@ class AdController extends Controller
                 $ad->images()->create(['path' => $path]); // Crée l'entrée en base
             }
         }
+
+      
+
 
         // Redirection avec message de succès
         return redirect()->route('annonces.index')->with('success', 'Annonce ajoutée avec succès.');
@@ -113,6 +117,7 @@ class AdController extends Controller
             'location' => 'nullable|string|max:255',
             // Les images sont optionnelles, mais si fournies, doivent être valides
             'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
+             'profile_photo'=>'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $ad = Ad::findOrFail($id); // Récupère l'annonce
@@ -121,6 +126,12 @@ class AdController extends Controller
         if ($ad->user_id !== Auth::id()) {
             return redirect()->route('annonces.index')->with('error', 'Vous ne pouvez pas modifier cette annonce.');
         }
+
+        // ✅ Stocke la photo de profil si elle existe
+    if ($request->hasFile('profile_photo')) {
+        $path = $request->file('profile_photo')->store('profile_photos', 'public');
+        $validated['profile_photo'] = $path;
+    }
 
         // 🔄 Met à jour les infos de l'annonce
         $ad->update($validated);
@@ -201,4 +212,7 @@ class AdController extends Controller
         $ad->load('images'); // Charge les images de l'annonce
         return view('ads.show', compact('ad')); // Affiche la vue détail
     }
+
+  
+
 }

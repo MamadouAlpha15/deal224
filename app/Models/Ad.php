@@ -19,6 +19,7 @@ class Ad extends Model // Déclare le modèle Ad qui hérite de la classe Eloque
         'whatsapp',  // Numéro WhatsApp de l'annonceur
         'location',    // Localisation de l’annonce
         'user_id',     // Identifiant de l’utilisateur qui a créé l’annonce
+        'profile_photo',
     ];
 
     /**
@@ -50,5 +51,11 @@ public function boostPayments()
 {
     return $this->hasMany(BoostPayment::class, 'user_id', 'user_id');
 }
+
+protected $casts = [
+    'last_shown_at' => 'datetime',
+    'boosted_until' => 'datetime',
+];
+
 
 }

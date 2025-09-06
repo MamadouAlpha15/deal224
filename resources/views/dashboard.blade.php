@@ -6,20 +6,21 @@
         <h2 class="mb-0">📋 Mes annonces</h2>
         <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
     </div>
-<!--
+
     {{-- Boutons Booster / Chat --}}
     <div class="d-flex justify-content-center my-4 gap-2">
         <a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
             🚀 Booster mes annonces
         </a>
+@if($lastPayment ?? false)
+    <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-info btn-lg btn-responsive">
+        💬 Chat
+        <span id="message-badge" class="badge bg-danger" style="display:none;"></span>
+    </a>
+@endif
 
-        @if($lastPayment ?? false)
-            <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-info btn-lg btn-responsive">
-                💬 Chat
-            </a>
-        @endif
     </div>
-!-->
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -60,7 +61,19 @@
                     @endif
 
                     {{-- Contenu --}}
-                    <div class="card-body d-flex flex-column">
+                       <div class="card-body d-flex flex-column ">
+                        {{-- PHOTO DE PROFIL en rond, positionnée en haut à gauche --}}
+    <div style="position: absolute; top: 5px; right: 8px; z-index: 10;">
+        @if($ad->profile_photo)
+            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
+                 alt="Profil" 
+                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @else
+            <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                 alt="Profil" 
+                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @endif
+    </div>
                         <h5 class="card-title">{{ $ad->title }}</h5>
                         <p class="card-text text-muted" style="min-height: 80px;">
                             {{ Str::limit($ad->description, 100) }}
@@ -165,4 +178,27 @@
     }
 </style>
 @endpush
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function checkMessages() {
+        axios.get("{{ route('user.unread-messages') }}")
+             .then(response => {
+                 const count = response.data.count;
+                 const badge = document.getElementById('message-badge');
+
+                 if(count > 0) {
+                     badge.innerText = count;
+                     badge.style.display = 'inline';
+                 } else {
+                     badge.style.display = 'none';
+                 }
+             });
+    }
+
+    // Vérifie toutes les 15 secondes
+    setInterval(checkMessages, 15000);
+    // Vérifie immédiatement au chargement
+    checkMessages();
+</script>
+
 @endsection

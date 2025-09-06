@@ -7,20 +7,20 @@
         <h2 class="mb-0">📋 Mes annonces</h2>
         <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
     </div>
-<!--
-    {{-- Boutons Booster / Chat --}}
+ {{-- Boutons Booster / Chat --}}
     <div class="d-flex justify-content-center my-4 gap-2">
         <a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
-            Booster mes annonces
+            🚀 Booster mes annonces
         </a>
+@if($lastPayment ?? false)
+    <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-info btn-lg btn-responsive">
+        💬 Chat
+        <span id="message-badge" class="badge bg-danger" style="display:none;"></span>
+    </a>
+@endif
 
-        @if($lastPayment)
-            <a href="{{ route('user.chat', $lastPayment->id) }}" class="btn btn-info btn-lg btn-responsive">
-                💬 Chat
-            </a>
-        @endif
     </div>
-!-->
+
     {{-- Message de succès --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -29,8 +29,11 @@
     {{-- Grille des annonces --}}
     <div class="row g-4">
         @forelse ($ads as $ad)
+        
             <div class="col-sm-6 col-md-4">
                 <div class="card h-100 shadow-sm border-0">
+
+
                     {{-- Carrousel images --}}
                     @if($ad->images->count())
                         <div id="carousel-{{ $ad->id }}" class="carousel slide" data-bs-ride="carousel">
@@ -62,8 +65,22 @@
                              style="height: 200px; object-fit: cover;">
                     @endif
 
+                   
+
                     {{-- Contenu de la carte --}}
-                    <div class="card-body d-flex flex-column">
+                   <a href="{{route('user.show',$ad->user->id)}}"> <div class="card-body d-flex flex-column ">
+                        {{-- PHOTO DE PROFIL en rond, positionnée en haut à gauche --}}
+    <div style="position: absolute; top: 5px; right: 8px; z-index: 10;">
+        @if($ad->profile_photo)
+            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
+                 alt="Profil" 
+                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @else
+            <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                 alt="Profil" 
+                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @endif
+    </div> </a>
                         <h5 class="card-title">{{ $ad->title }}</h5>
                         <p class="card-text text-muted" style="min-height: 80px;">
                             {{ Str::limit($ad->description, 100) }}
@@ -123,4 +140,28 @@
     @media (max-width: 576px) { .btn-responsive { width: 90%; font-size:1rem; padding:0.75rem 1rem; } }
 </style>
 @endpush
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function checkMessages() {
+        axios.get("{{ route('user.unread-messages') }}")
+             .then(response => {
+                 const count = response.data.count;
+                 const badge = document.getElementById('message-badge');
+
+                 if(count > 0) {
+                     badge.innerText = count;
+                     badge.style.display = 'inline';
+                 } else {
+                     badge.style.display = 'none';
+                 }
+             });
+    }
+
+    // Vérifie toutes les 15 secondes
+    setInterval(checkMessages, 15000);
+    // Vérifie immédiatement au chargement
+    checkMessages();
+</script>
+
 @endsection

@@ -18,6 +18,27 @@
         @csrf
         @method('PUT')
 
+     <div class="mb-3">
+    <label class="form-label">Photo de profil actuelle</label>
+
+    @php
+        $profileSrc = $ad->profile_photo 
+                      ? asset('storage/' . $ad->profile_photo) 
+                      : asset('storage/profile_placeholder.png');
+    @endphp
+
+    <div id="profile-preview" class="mt-2">
+        <img id="profile-img" 
+             src="{{ $profileSrc }}" 
+             alt="Aperçu" 
+             style="display: block; width:100px; height:100px; object-fit:cover; border-radius:50%; border:2px solid #ddd;">
+    </div>
+
+    <label class="form-label mt-2">Changer la photo de profil</label>
+    <input type="file" name="profile_photo" class="form-control" accept="image/*">
+</div>
+
+
         <div class="mb-3">
             <label class="form-label">Titre</label>
             <input type="text" name="title" class="form-control" value="{{ $ad->title }}" required>
@@ -151,6 +172,23 @@
         newInput.files = dataTransfer.files;
 
         e.target.appendChild(newInput);
+    });
+
+
+    // Aperçu pour la photo de profil
+    const profileInput = document.querySelector('input[name="profile_photo"]');
+    const profileImg = document.getElementById('profile-img');
+
+    profileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            profileImg.src = e.target.result;
+            profileImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     });
 </script>
 @endsection

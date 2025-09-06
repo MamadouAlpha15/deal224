@@ -51,7 +51,22 @@
             <hr>
 
             <p><strong>Publié le :</strong> {{ $ad->created_at->format('d/m/Y à H:i') }}</p>
-            <p><strong>Par :</strong> {{ $ad->user->name }}</p>
+            <p>
+
+
+             @if($ad->profile_photo)
+            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
+                 alt="Profil" 
+                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @else
+            <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                 alt="Profil" 
+                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
+        @endif
+                <strong>Par :</strong> {{ $ad->user->name }}
+        
+        
+        </p>
 
             @auth
                 @if(auth()->id() === $ad->user_id)
