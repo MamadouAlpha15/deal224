@@ -37,6 +37,8 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // ✅ Suivi des visites uniquement pour les routes web
+        \App\Http\Middleware\TrackVisits::class,
         ],
 
         'api' => [
@@ -65,4 +67,6 @@ class Kernel extends HttpKernel
 
        
     ];
+    // Ajoute le middleware pour suivre les visites
+   
 }

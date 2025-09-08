@@ -60,6 +60,7 @@ public function index()
             'location' => 'nullable|string|max:255', // Localisation optionnelle, max 255 caractères
             'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
             'profile_photo'=>'image|mimes:jpeg,png,jpg|max:51200',
+            'currency' => 'required|in:GNF,EUR,USD', // Devise obligatoire, doit être GNF, EUR ou USD
         ]);
 
         // Ajoute l'ID de l'utilisateur connecté à l'annonce
@@ -119,6 +120,7 @@ public function index()
             // Les images sont optionnelles, mais si fournies, doivent être valides
             'images.*' => 'image|mimes:jpeg,png,jpg|max:51200', // 50 Mo max par image
              'profile_photo'=>'image|mimes:jpeg,png,jpg|max:2048',
+             'currency' => 'required|in:GNF,EUR,USD', // Devise obligatoire, doit être GNF, EUR ou USD
         ]);
 
         $ad = Ad::findOrFail($id); // Récupère l'annonce
@@ -184,27 +186,66 @@ public function index()
     $query = $request->input('q');
     $category = $request->input('category'); // récupère la catégorie sélectionnée
 
+    // Synonymes pour la recherche
+    $synonyms = [
+        'voiture' => ['voiture', 'car', 'auto', 'véhicule', 'cars'],
+        'moto' => ['moto', 'motorcycle', 'bike', 'motobike'],
+        'immobilier' => ['maison', 'villa', 'appartement', 'logement', 'immeuble'],
+        'cosmétique' => ['cosmétique', 'maquillage', 'beauty', 'crème', 'parfum'],
+        'électronique' => ['électronique', 'telephone', 'téléphone', 'smartphone', 'pc', 'ordinateur', 'laptop', 'tv', 'écran', 'console'],
+        'vélo' => ['vélo', 'bicyclette',],
+    ];
+
     // Détecte le driver DB
     $nowFunction = \DB::getDriverName() === 'sqlite' ? 'CURRENT_TIMESTAMP' : 'NOW()';
 
-    $ads = Ad::when($query, function ($q) use ($query) {
-                return $q->where(function($sub) use ($query) {
-                    $sub->where('title', 'like', "%$query%")
-                        ->orWhere('description', 'like', "%$query%");
-                });
-            })
-            ->when($category, function ($q) use ($category) {
-                return $q->where('category', $category); // filtre par catégorie si choisi
-            })
-            ->with('images')
-            ->orderByRaw("CASE WHEN boosted_until >= $nowFunction THEN 1 ELSE 0 END DESC") // annonces boostées en premier
-            ->orderByDesc('boosted_until') // puis les plus récentes boostées
-            ->orderByDesc('created_at') // ensuite annonces normales par date
-            ->paginate(30)
-            ->withQueryString(); // conserve les filtres dans la pagination
+    $ads = Ad::query();
+
+    // 🔎 Recherche texte + synonymes
+    if ($query) {
+        $ads->where(function($q) use ($query, $synonyms) {
+            $q->where('title', 'like', "%$query%")
+              ->orWhere('description', 'like', "%$query%");
+
+            // Vérifie si le mot est dans un groupe de synonymes
+            foreach ($synonyms as $group) {
+                if (in_array(strtolower($query), $group)) {
+                    $q->orWhere(function($sub) use ($group) {
+                        foreach ($group as $word) {
+                            $sub->orWhere('title', 'like', "%$word%")
+                                ->orWhere('description', 'like', "%$word%");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // 📂 Filtre par catégorie + synonymes
+    if ($category) {
+        $ads->where(function($q) use ($category, $synonyms) {
+            $q->where('category', $category);
+
+            if (isset($synonyms[$category])) {
+                foreach ($synonyms[$category] as $word) {
+                    $q->orWhere('title', 'like', "%$word%")
+                      ->orWhere('description', 'like', "%$word%");
+                }
+            }
+        });
+    }
+
+    // Tri boost / date
+    $ads = $ads->with('images')
+        ->orderByRaw("CASE WHEN boosted_until >= $nowFunction THEN 1 ELSE 0 END DESC")
+        ->orderByDesc('boosted_until')
+        ->orderByDesc('created_at')
+        ->paginate(30)
+        ->withQueryString();
 
     return view('welcome', compact('ads', 'query', 'category'));
 }
+
 
 
     // 🔹 Affiche les détails d'une annonce

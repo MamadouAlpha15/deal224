@@ -52,7 +52,10 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ $ad->title }}</h5>
                         <p class="card-text text-muted">{{ Str::limit($ad->description, 80) }}</p>
-                        <p class="fw-bold text-primary">{{ number_format($ad->price, 0, ',', ' ') }} GNF</p>
+                          {{-- PRIX --}}
+                           <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
+                              💰 {{ number_format($ad->price, 0, ',', ' ') }} {{ $ad->currency }}
+                           </p>
                         <a href="{{ route('annonces.show', $ad->id) }}" class="btn btn-outline-info btn-sm">Voir</a>
                     </div>
                 </div>

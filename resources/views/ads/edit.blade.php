@@ -30,10 +30,17 @@
             <textarea name="description" class="form-control" rows="5" required>{{ $ad->description }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Prix (GNF)</label>
-            <input type="number" name="price" class="form-control" value="{{ $ad->price }}" required>
-        </div>
+       <div class="mb-3">
+    <label class="form-label">Prix</label>
+    <div class="input-group">
+        <input type="number" name="price" class="form-control" value="{{ $ad->price }}" required>
+        <select name="currency" class="form-select" required>
+            <option value="GNF" {{ $ad->currency == 'GNF' ? 'selected' : '' }}>GNF</option>
+            <option value="EUR" {{ $ad->currency == 'EUR' ? 'selected' : '' }}>€ Euro</option>
+            <option value="USD" {{ $ad->currency == 'USD' ? 'selected' : '' }}>$ Dollar</option>
+        </select>
+    </div>
+</div>
 
         <div class="mb-3">
             <label class="form-label">Teléphone</label>

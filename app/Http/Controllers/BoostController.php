@@ -7,6 +7,8 @@ use App\Models\BoostPayment;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\Visit;
+use App\Models\Ad;
 
 
 class BoostController extends Controller
@@ -70,32 +72,50 @@ class BoostController extends Controller
     /**
      * Tableau de bord pour l'admin
      */
-   public function adminDashboard(Request $request)
+  public function adminDashboard(Request $request)
 {
     $depotNumber = $request->input('q'); // récupère le numéro de dépôt tapé dans la barre de recherche
 
     // Paiements en attente (pending)
     $pendingPayments = BoostPayment::with('user')
-                        ->where('status', 'pending')
-                        ->when($depotNumber, function($query) use ($depotNumber){
-                            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
-                        })
-                        ->latest()
-                        ->get();
+        ->where('status', 'pending')
+        ->when($depotNumber, function($query) use ($depotNumber) {
+            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
+        })
+        ->latest()
+        ->get();
 
     // Paiements confirmés (paid)
     $paidPayments = BoostPayment::with('user')
-                        ->where('status', 'paid')
-                        ->when($depotNumber, function($query) use ($depotNumber){
-                            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
-                        })
-                        ->latest()
-                        ->get();
+        ->where('status', 'paid')
+        ->when($depotNumber, function($query) use ($depotNumber) {
+            $query->where('depot', $depotNumber); // filtre par numéro de dépôt si fourni
+        })
+        ->latest()
+        ->get();
+
+    // =======================
+    // STATISTIQUES GLOBALES
+    // =======================
+
+    // Nombre total de visites du site
+    $visitsCount = Visit::count();
+
+    // Nombre total d’annonces créées
+    $adsCount = Ad::count();
+
+    // Nombre total de boosts confirmés
+    $boostsCount = BoostPayment::where('status', 'paid')->count();
 
     // Passe les résultats à la vue
-    return view('admin.boosts', compact('pendingPayments', 'paidPayments'));
+    return view('admin.boosts', compact(
+        'pendingPayments',
+        'paidPayments',
+        'visitsCount',
+        'adsCount',
+        'boostsCount'
+    ));
 }
-
 
     /**
      * Valider un paiement et booster les annonces correspondantes

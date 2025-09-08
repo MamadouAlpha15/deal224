@@ -39,9 +39,10 @@
         <div class="col-md-5">
             <h2 class="mb-3">{{ $ad->title }}</h2>
 
-            <p><strong>Prix :</strong> 
-                <span class="text-primary fw-bold">{{ number_format($ad->price, 0, ',', ' ') }} GNF</span>
-            </p>
+             {{-- PRIX --}}
+                           <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
+                              💰 {{ number_format($ad->price, 0, ',', ' ') }} {{ $ad->currency }}
+                           </p>
             <hr>
             <p class="text-muted mb-0">
                 📞 Contact : 

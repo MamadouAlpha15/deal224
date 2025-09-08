@@ -38,11 +38,19 @@
             <textarea name="description" class="form-control" rows="5" required>{{ old('description') }}</textarea>
         </div>
 
-        {{-- Champ prix --}}
-        <div class="mb-3">
-            <label class="form-label">Prix (en GNF)</label>
-            <input type="number" name="price" class="form-control" value="{{ old('price') }}" required>
-        </div>
+       {{-- Champ prix + monnaie --}}
+<div class="mb-3">
+    <label class="form-label">Prix</label>
+    <div class="input-group">
+        <input type="number" name="price" class="form-control" value="{{ old('price') }}" required>
+        <select name="currency" class="form-select" required>
+            <option value="GNF" {{ old('currency') == 'GNF' ? 'selected' : '' }}>GNF</option>
+            <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>€ Euro</option>
+            <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }}>$ Dollar</option>
+        </select>
+    </div>
+</div>
+
         {{--champ telephone --}}
          <div class="mb-3">
             <label class="form-label">Teléphone</label>

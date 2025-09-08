@@ -7,6 +7,28 @@
 </form>
 
 <div class="container">
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <h5>👀 Visites</h5>
+            <p class="fs-4 fw-bold">{{ $visitsCount }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <h5>📝 Annonces créées</h5>
+            <p class="fs-4 fw-bold">{{ $adsCount }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 text-center p-3">
+            <h5>🚀 Boosts confirmés</h5>
+            <p class="fs-4 fw-bold">{{ $boostsCount }}</p>
+        </div>
+    </div>
+</div>
 
     <!-- ======================= -->
     <!-- Titre de la page -->

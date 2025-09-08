@@ -4,16 +4,38 @@
 <div class="container">
 
     {{-- ===================== RECHERCHE ===================== --}}
-    <form method="GET" action="{{ route('home') }}" class="mb-4">
-        <div class="row g-2">
-            {{-- Champ de recherche --}}
-            <div class="col-md-4">
-                <input type="text" name="q" class="form-control" 
-                       placeholder="Rechercher une annonce..." 
-                       value="{{ $query ?? '' }}">
-            </div>
+    {{-- ===================== RECHERCHE ===================== --}}
+<form method="GET" action="{{ route('home') }}" class="mb-4">
+    <div class="row g-2">
+        {{-- Champ de recherche --}}
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" 
+                   placeholder="Rechercher une annonce..." 
+                   value="{{ $query ?? '' }}">
         </div>
-    </form>
+
+        {{-- Filtre par catégorie --}}
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">-- Toutes les catégories --</option>
+                <option value="voiture" {{ ($category ?? '') === 'voiture' ? 'selected' : '' }}>🚗 Voitures</option>
+                <option value="moto" {{ ($category ?? '') === 'moto' ? 'selected' : '' }}>🏍️ Motos</option>
+                <option value="immobilier" {{ ($category ?? '') === 'immobilier' ? 'selected' : '' }}>🏠 Immobilier</option>
+                <option value="cosmétique" {{ ($category ?? '') === 'cosmétique' ? 'selected' : '' }}>💄 Cosmétiques</option>
+                <option value="électronique" {{ ($category ?? '') === 'électronique' ? 'selected' : '' }}>📱 Électronique</option>
+                <option value="vélo" {{ ($category ?? '') === 'vélo' ? 'selected' : '' }}>🚲 Vélos</option>
+            </select>
+        </div>
+
+        {{-- Bouton recherche --}}
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                🔎 Rechercher
+            </button>
+        </div>
+    </div>
+</form>
+
 
     {{-- ===================== HEADER ===================== --}}
     <div class="d-flex justify-content-between align-items-center py-3">
@@ -122,11 +144,10 @@
                             <p class="card-text text-secondary mb-2" style="min-height: 80px; line-height: 1.4;">
                                 {{ Str::limit($ad->description, 100) }}
                             </p>
-
                             {{-- PRIX --}}
-                            <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
-                                💰 {{ number_format($ad->price, 0, ',', ' ') }} GNF
-                            </p>
+                           <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
+                              💰 {{ number_format($ad->price, 0, ',', ' ') }} {{ $ad->currency }}
+                           </p>
 
                             {{-- TÉLÉPHONE --}}
                             <p class="text-primary mb-1">

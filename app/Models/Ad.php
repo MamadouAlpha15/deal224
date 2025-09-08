@@ -20,6 +20,7 @@ class Ad extends Model // Déclare le modèle Ad qui hérite de la classe Eloque
         'location',    // Localisation de l’annonce
         'user_id',     // Identifiant de l’utilisateur qui a créé l’annonce
         'profile_photo',
+        'currency' , // Devise du prix (ex : GNF, USD, EUR)
     ];
 
     /**

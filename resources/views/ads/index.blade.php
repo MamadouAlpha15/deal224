@@ -98,10 +98,9 @@
         {{ Str::limit($ad->description, 100) }}
     </p>
 
-    {{-- Prix --}}
     <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
-        💰 {{ number_format($ad->price, 0, ',', ' ') }} GNF
-    </p>
+    💰 {{ number_format($ad->price, 0, ',', ' ') }} {{ $ad->currency }}
+</p>
 
     {{-- Téléphone --}}
     <p class="text-primary mb-1">
