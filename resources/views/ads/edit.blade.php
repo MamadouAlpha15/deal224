@@ -18,26 +18,7 @@
         @csrf
         @method('PUT')
 
-     <div class="mb-3">
-    <label class="form-label">Photo de profil actuelle</label>
-
-    @php
-        $profileSrc = $ad->profile_photo 
-                      ? asset('storage/' . $ad->profile_photo) 
-                      : asset('storage/profile_placeholder.png');
-    @endphp
-
-    <div id="profile-preview" class="mt-2">
-        <img id="profile-img" 
-             src="{{ $profileSrc }}" 
-             alt="Aperçu" 
-             style="display: block; width:100px; height:100px; object-fit:cover; border-radius:50%; border:2px solid #ddd;">
-    </div>
-
-    <label class="form-label mt-2">Changer la photo de profil</label>
-    <input type="file" name="profile_photo" class="form-control" accept="image/*">
-</div>
-
+    
 
         <div class="mb-3">
             <label class="form-label">Titre</label>

@@ -4,9 +4,22 @@
 <div class="container py-4">
     {{-- Profil utilisateur --}}
     <div class="text-center mb-4">
-       
+        {{-- Photo de profil --}}
+        @if($user->profile_photo)
+            <img src="{{ asset('storage/' . $user->profile_photo) }}" 
+                 alt="Profil" 
+                 class="rounded-circle border border-white mb-3 shadow-sm" 
+                 style="width:120px; height:120px; object-fit:cover;">
+        @else
+            <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                 alt="Profil" 
+                 class="rounded-circle border border-white mb-3 shadow-sm" 
+                 style="width:120px; height:120px; object-fit:cover;">
+        @endif
+
+        {{-- Nom et info --}}
         <h2 class="mt-2">{{ $user->name }}</h2>
-        <p>Email : {{ $user->email }}</p>
+        <p class="text-muted">Email : {{ $user->email }}</p>
         <p><strong>{{ $user->ads->count() }}</strong> annonces publiées</p>
     </div>
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\BoostController;
 use App\Http\Controllers\MessageController;
 use App\Models\BoostPayment;
 
+
 Route::get('/dashboard', function () {
     $userId = Auth::id();
 
@@ -81,9 +82,7 @@ Route::delete('/user/boost/{payment}/messages', [MessageController::class, 'dele
 
 Route::delete('/superadmin/boost/delete-all-confirmed', [BoostController::class, 'deleteAllConfirmedBoosts'])
     ->name('superadmin.boost.deleteAllConfirmed');
-
-  // Page profil utilisateur avec toutes ses annonces
-
+;
 
 });
 

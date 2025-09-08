@@ -24,19 +24,7 @@
           
         @csrf {{-- 🔐 Protection CSRF obligatoire dans tous les formulaires --}}
 
-        {{-- Champ photo de profil --}}
-<div class="mb-3">
-    <label class="form-label">Photo de profil</label>
-    <input type="file" 
-           name="profile_photo" 
-           class="form-control" 
-           accept="image/*"> {{-- ✅ N'accepte que les images --}}
-    
-    {{-- Aperçu --}}
-    <div id="profile-preview" class="mt-2">
-        <img id="profile-img" src="#" alt="Aperçu" style="display:none; width:100px; height:100px; object-fit:cover; border-radius:50%;">
-    </div>
-</div>
+      
 
         {{-- Champ titre --}}
         <div class="mb-3">

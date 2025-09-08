@@ -61,28 +61,49 @@
                     @endif
 
                     {{-- Contenu --}}
-                       <div class="card-body d-flex flex-column ">
-                        {{-- PHOTO DE PROFIL en rond, positionnée en haut à gauche --}}
-    <div style="position: absolute; top: 5px; right: 8px; z-index: 10;">
-        @if($ad->profile_photo)
-            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
-                 alt="Profil" 
-                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
-        @else
-            <img src="{{ asset('storage/profile_placeholder.png') }}" 
-                 alt="Profil" 
-                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
-        @endif
-    </div>
-                        <h5 class="card-title">{{ $ad->title }}</h5>
-                        <p class="card-text text-muted" style="min-height: 80px;">
-                            {{ Str::limit($ad->description, 100) }}
-                        </p>
-                        <p class="fw-bold text-primary mt-auto">
-                            {{ number_format($ad->price, 0, ',', ' ') }} GNF
-                        </p>
+                     <div class="card-body d-flex flex-column ">
 
-                        <p class="text-muted">📞 {{ $ad->phone ?? 'Numéro non disponible' }}</p>
+    {{-- PHOTO DE PROFIL en rond --}}
+    <a href="{{route('user.show',$ad->user->id)}}">
+        <div style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+            @if($ad->user->profile_photo)
+                <img src="{{ asset('storage/' . $ad->user->profile_photo) }}" 
+                     alt="Profil" 
+                     class="rounded-circle border border-white" 
+                     style="width:60px; height:60px; object-fit:cover; box-shadow: 0 0 8px rgba(0,0,0,0.2);">
+            @else
+                <img src="{{ asset('storage/profile_placeholder.png') }}" 
+                     alt="Profil" 
+                     class="rounded-circle border border-white" 
+                     style="width:60px; height:60px; object-fit:cover; box-shadow: 0 0 8px rgba(0,0,0,0.2);">
+            @endif
+        </div>
+    </a>
+
+    {{-- Titre --}}
+    <h5 class="card-title fw-bold text-dark mb-2" style="font-size: 1.25rem;">
+        {{ $ad->title }}
+    </h5>
+
+    {{-- Description --}}
+    <p class="card-text text-secondary mb-2" style="min-height: 80px; line-height: 1.4;">
+        {{ Str::limit($ad->description, 100) }}
+    </p>
+
+    {{-- Prix --}}
+    <p class="fw-bold text-success mb-1" style="font-size: 1.1rem;">
+        💰 {{ number_format($ad->price, 0, ',', ' ') }} GNF
+    </p>
+
+    {{-- Téléphone --}}
+    <p class="text-primary mb-1">
+        📞 {{ $ad->phone ?? 'Numéro non disponible' }}
+    </p>
+
+    {{-- Localisation --}}
+    <p class="text-muted mb-0">
+        📍 {{ $ad->location ?? 'Lieu non précisé' }}
+    </p>
 
                         {{-- WhatsApp --}}
                         @if(!empty($ad->whatsapp))

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +13,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Crée un utilisateur unique avec mot de passe
+        User::firstOrCreate(
+            ['email' => 'idiatou23@gmail.com'], // critère unique
+            [
+                'name' => 'sow',
+                'password' => Hash::make('password123'), // mot de passe sécurisé
+                'profile_photo' => null, // optionnel
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'sow',
-            'email' => 'idiatou23@gmail.com',
-        ]);
+        // Appelle le seeder des annonces
+        $this->call(AdSeeder::class);
     }
 }

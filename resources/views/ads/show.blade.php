@@ -42,7 +42,29 @@
             <p><strong>Prix :</strong> 
                 <span class="text-primary fw-bold">{{ number_format($ad->price, 0, ',', ' ') }} GNF</span>
             </p>
-
+            <hr>
+            <p class="text-muted mb-0">
+                📞 Contact : 
+                @if($ad->phone)
+                    <a href="tel:{{ $ad->phone }}">{{ $ad->phone }}</a>
+                @else
+                    Non spécifié
+                @endif
+            <hr>
+            </p>
+            <p class="text-muted mb-0 text-secondary">
+                📍Lieu: <strong class="text-primary">{{ $ad->location ?? 'Lieu non précisé' }}</strong> </p>
+            <hr>
+            {{-- WhatsApp --}}
+                        @if(!empty($ad->whatsapp))
+                            @php
+                                $message = urlencode("Bonjour, je suis intéressé par votre annonce : {$ad->title}. Voici le lien : " . route('annonces.show', $ad->id));
+                                $whatsappUrl = "https://wa.me/{$ad->whatsapp}?text={$message}";
+                            @endphp
+                            <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-sm btn-success d-flex align-items-center gap-2 mt-1">
+                                <i class="bi bi-whatsapp"></i> Contacter via WhatsApp
+                            </a>
+                        @endif
             <hr>
 
             <h5>Description</h5>
@@ -51,22 +73,20 @@
             <hr>
 
             <p><strong>Publié le :</strong> {{ $ad->created_at->format('d/m/Y à H:i') }}</p>
-            <p>
-
-
-             @if($ad->profile_photo)
-            <img src="{{ asset('storage/' . $ad->profile_photo) }}" 
-                 alt="Profil" 
-                 style="width:60px; height:60px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
-        @else
-            <img src="{{ asset('storage/profile_placeholder.png') }}" 
-                 alt="Profil" 
-                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid #fff;">
-        @endif
-                <strong>Par :</strong> {{ $ad->user->name }}
-        
-        
-        </p>
+           <p class="d-flex align-items-center gap-2">
+    @if($ad->user->profile_photo)
+        <img src="{{ asset('storage/' . $ad->user->profile_photo) }}" 
+             alt="Profil" 
+             class="rounded-circle border border-white"
+             style="width:50px; height:50px; object-fit:cover;">
+    @else
+        <img src="{{ asset('storage/profile_placeholder.png') }}" 
+             alt="Profil" 
+             class="rounded-circle border border-white"
+             style="width:50px; height:50px; object-fit:cover;">
+    @endif
+    <strong>Par :</strong> {{ $ad->user->name }}
+</p>
 
             @auth
                 @if(auth()->id() === $ad->user_id)

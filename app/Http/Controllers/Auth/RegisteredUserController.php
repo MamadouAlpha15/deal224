@@ -27,25 +27,34 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+   public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'profile_photo' => ['nullable', 'image', 'max:5041'], // ✅ validation image
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            
-        ]);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect()->route('annonces.index')->with('success', 'Inscription réussie. Bienvenue !');
+    // ✅ Stockage photo si envoyée
+    $path = null;
+    if ($request->hasFile('profile_photo')) {
+        $path = $request->file('profile_photo')->store('profiles', 'public');
     }
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'profile_photo' => $path, // ✅ sauvegarde du chemin
+    ]);
+
+    event(new Registered($user));
+
+    Auth::login($user);
+
+    return redirect()->route('annonces.index')
+                     ->with('success', 'Inscription réussie. Bienvenue !');
+}
+
 }

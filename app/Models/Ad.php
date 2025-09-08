@@ -57,5 +57,24 @@ protected $casts = [
     'boosted_until' => 'datetime',
 ];
 
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    // Compte les messages non lus venant des clients
+    public function unreadMessagesCount()
+    {
+        return $this->conversations()
+                    ->with('messages')
+                    ->get()
+                    ->sum(function($conversation){
+                        return $conversation->messages
+                            ->where('user_id', '<>', $conversation->seller_id) // venant du client
+                            ->where('read', false) // non lus
+                            ->count();
+                    });
+    }
+    
 
 }

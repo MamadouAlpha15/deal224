@@ -111,7 +111,8 @@ public function index()
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer',
+           'price' => 'required|numeric|min:0',
+
             'phone' => 'nullable|string|max:20',
             'whatsapp' => 'required|string|max:20',
             'location' => 'nullable|string|max:255',

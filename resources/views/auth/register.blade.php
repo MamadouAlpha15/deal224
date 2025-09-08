@@ -1,6 +1,48 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
         @csrf
+
+      <!-- Photo de profil -->
+<div class="mt-4">
+    <x-input-label for="profile_photo" :value="__('Photo de profil')" />
+
+    <input id="profile_photo"
+           type="file"
+           name="profile_photo"
+           class="block mt-1 w-full"
+           accept="image/*"
+           onchange="previewProfilePhoto(event)">
+
+    <!-- Zone d'aperçu -->
+    <div class="mt-3">
+        <img id="profile_preview"
+             src="{{ asset('storage/profile_placeholder.png') }}" 
+             alt="Aperçu photo"
+             class="rounded-full border"
+             style="width: 100px; height: 100px; object-fit: cover;">
+    </div>
+
+    <x-input-error :messages="$errors->get('profile_photo')" class="mt-2" />
+</div>
+
+<!-- Script aperçu  de la phto -->
+<script>
+    function previewProfilePhoto(event) {
+        const input = event.target;
+        const preview = document.getElementById('profile_preview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
 
         <!-- Name -->
         <div>

@@ -28,9 +28,22 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                 <ul class="navbar-nav">
                     @auth
-                        <li class="nav-item me-3">
-                            <span class="nav-link text-white">👤 {{ Auth::user()->name }}</span>
-                        </li>
+                        <li class="nav-item me-3 d-flex align-items-center">
+    {{-- Si l’utilisateur a une photo --}}
+    @if(Auth::user()->profile_photo)
+        <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" 
+             alt="Profil" 
+             style="width:35px; height:35px; object-fit:cover; border-radius:50%; border:2px solid #fff; margin-right:8px;">
+    @else
+        {{-- Image par défaut si pas de photo --}}
+        <img src="{{ asset('images/profile_placeholder.png') }}" 
+             alt="Profil" 
+             style="width:35px; height:35px; object-fit:cover; border-radius:50%; border:2px solid #fff; margin-right:8px;">
+    @endif
+
+    <span class="nav-link text-white">{{ Auth::user()->name }}</span>
+</li>
+
                         <li class="nav-item">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

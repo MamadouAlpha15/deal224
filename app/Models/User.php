@@ -22,6 +22,7 @@ class User extends Authenticatable // 🔹 La classe User hérite d’Authentica
     protected $fillable = [
         'name',     // Nom de l'utilisateur
         'email',    // Email de l'utilisateur
+        'profile_photo', // Photo de profil
         'password', // Mot de passe (sera hashé)
         'phone',
         'role',     // Rôle de l'utilisateur (ex : superadmin, admin, user)
