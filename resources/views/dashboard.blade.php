@@ -6,7 +6,7 @@
         <h2 class="mb-0">📋 Mes annonces</h2>
         <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
     </div>
-
+<!--
     {{-- Boutons Booster / Chat --}}
     <div class="d-flex justify-content-center my-4 gap-2">
         <a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
@@ -20,6 +20,9 @@
 @endif
 
     </div>
+!-->
+
+    {{-- Message de succès --}}
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -29,36 +32,52 @@
         @forelse($ads as $ad)
             <div class="col-sm-6 col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0">
-                    {{-- Images --}}
-                    @if($ad->images->count())
-                        <div id="carousel-{{ $ad->id }}" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                @foreach($ad->images as $index => $image)
-                                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                        <img src="{{ asset('storage/' . $image->path) }}" 
-                                             class="d-block w-100 img-fluid" 
-                                             alt="Image {{ $index + 1 }}" 
-                                             style="max-height: 300px; object-fit: cover;">
-                                    </div>
-                                @endforeach
-                            </div>
-                            @if($ad->images->count() > 1)
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Précédent</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Suivant</span>
-                                </button>
-                            @endif
-                        </div>
-                    @else
-                        <img src="{{ asset('storage/placeholder.jpg') }}" 
-                             class="card-img-top rounded-top" 
-                             alt="Aucune image" 
-                             style="height: 200px; object-fit: cover;">
-                    @endif
+                    {{-- Images avec carrousel + indicateurs --}}
+@if($ad->images->count())
+    <div id="carousel-{{ $ad->id }}" class="carousel slide" data-bs-ride="carousel">
+
+        {{-- Indicateurs --}}
+        <div class="carousel-indicators">
+            @foreach($ad->images as $index => $image)
+                <button type="button" 
+                        data-bs-target="#carousel-{{ $ad->id }}" 
+                        data-bs-slide-to="{{ $index }}" 
+                        class="{{ $index === 0 ? 'active' : '' }}" 
+                        aria-current="{{ $index === 0 ? 'true' : 'false' }}" 
+                        aria-label="Slide {{ $index + 1 }}">
+                </button>
+            @endforeach
+        </div>
+
+        {{-- Images --}}
+        <div class="carousel-inner">
+            @foreach($ad->images as $index => $image)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <img src="{{ asset('storage/' . $image->path) }}" 
+                         class="d-block w-100 img-fluid" 
+                         alt="Image {{ $index + 1 }}" 
+                         style="max-height: 300px; object-fit: cover;">
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Contrôles précédent / suivant --}}
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Suivant</span>
+        </button>
+    </div>
+@else
+    {{-- Image par défaut si aucune image --}}
+    <img src="{{ asset('storage/placeholder.jpg') }}" 
+         class="card-img-top rounded-top" 
+         alt="Aucune image" 
+         style="height: 200px; object-fit: cover;">
+@endif
 
                     {{-- Contenu --}}
                      <div class="card-body d-flex flex-column ">

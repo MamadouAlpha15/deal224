@@ -13,6 +13,7 @@
                    placeholder="Rechercher une annonce..." 
                    value="{{ $query ?? '' }}">
         </div>
+        
 
         {{-- Filtre par catégorie --}}
         <div class="col-md-3">
@@ -24,6 +25,9 @@
                 <option value="cosmétique" {{ ($category ?? '') === 'cosmétique' ? 'selected' : '' }}>💄 Cosmétiques</option>
                 <option value="électronique" {{ ($category ?? '') === 'électronique' ? 'selected' : '' }}>📱 Électronique</option>
                 <option value="vélo" {{ ($category ?? '') === 'vélo' ? 'selected' : '' }}>🚲 Vélos</option>
+                <option value="vêtement" {{ ($category ?? '') === 'vêtement' ? 'selected' : '' }}>👗 Vêtements</option>
+                <option value="meuble" {{ ($category ?? '') === 'meuble' ? 'selected' : '' }}>🛋️ Meubles</option>
+                <option value="divers" {{ ($category ?? '') === 'divers' ? 'selected' : '' }}>📦 Divers</option>
             </select>
         </div>
 
@@ -35,6 +39,16 @@
         </div>
     </div>
 </form>
+{{-- ===================== RAPPEL RAPIDE POUR LES VENDEURS ===================== --}}
+<div class="alert alert-info mb-4">
+    ⚡ <strong>Règles rapides pour publier :</strong>
+    <ul class="mb-0">
+        <li>🛍️ <strong>1 produit = 1 annonce</strong> (exemple : un parfum Dior = 1 annonce, un parfum Chanel = une autre).</li>
+        <li>📸 <strong>Ajoutez plusieurs photos du même produit</strong> pour montrer tous ses détails (voiture, maison, téléphone…).</li>
+        <li>❌ <strong>Ne mélangez pas plusieurs produits</strong> dans une seule annonce (exemple : vêtements + chaussures ensemble).</li>
+    </ul>
+</div>
+
 
 
     {{-- ===================== HEADER ===================== --}}
@@ -82,37 +96,53 @@
                             </span>
                         @endif
 
-                        {{-- ===================== CARROUSEL D'IMAGES ===================== --}}
-                        @if($ad->images->count())
-                            <div id="carousel-{{ $ad->id }}" class="carousel slide">
-                                <div class="carousel-inner">
-                                    @foreach($ad->images as $index => $image)
-                                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                            <img src="{{ asset('storage/' . $image->path) }}" 
-                                                 class="d-block w-100 img-fluid" 
-                                                 alt="Image {{ $index + 1 }}" 
-                                                 style="max-height: 300px; object-fit: cover;">
-                                        </div>
-                                    @endforeach
-                                </div>
-                                {{-- Contrôles du carrousel --}}
-                                <button class="carousel-control-prev" type="button" 
-                                        data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Précédent</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" 
-                                        data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Suivant</span>
-                                </button>
-                            </div>
-                        @else
-                            {{-- Image par défaut si aucune image --}}
-                            <img src="{{ asset('storage/placeholder.jpg') }}" 
-                                 class="card-img-top" 
-                                 style="height: 200px; object-fit: cover;">
-                        @endif
+                       {{-- ===================== CARROUSEL D'IMAGES ===================== --}}
+@if($ad->images->count())
+    <div id="carousel-{{ $ad->id }}" class="carousel slide" data-bs-ride="false">   <!--ici false pour ne pas démarrer automatiquement et carousol pour automatique --> 
+
+        {{-- Indicateurs (les petits points en bas) --}}
+        <div class="carousel-indicators">
+            @foreach($ad->images as $index => $image)
+                <button type="button" 
+                        data-bs-target="#carousel-{{ $ad->id }}" 
+                        data-bs-slide-to="{{ $index }}" 
+                        class="{{ $index === 0 ? 'active' : '' }}" 
+                        aria-current="{{ $index === 0 ? 'true' : 'false' }}" 
+                        aria-label="Slide {{ $index + 1 }}">
+                </button>
+            @endforeach
+        </div>
+
+        {{-- Images --}}
+        <div class="carousel-inner">
+            @foreach($ad->images as $index => $image)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <img src="{{ asset('storage/' . $image->path) }}" 
+                         class="d-block w-100 img-fluid" 
+                         alt="Image {{ $index + 1 }}" 
+                         style="max-height: 300px; object-fit: cover;">
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Contrôles du carrousel --}}
+        <button class="carousel-control-prev" type="button" 
+                data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" 
+                data-bs-target="#carousel-{{ $ad->id }}" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Suivant</span>
+        </button>
+    </div>
+@else
+    {{-- Image par défaut si aucune image --}}
+    <img src="{{ asset('storage/placeholder.jpg') }}" 
+         class="card-img-top" 
+         style="height: 200px; object-fit: cover;">
+@endif
 
                         {{-- ===================== CONTENU DE LA CARD ===================== --}}
                         <div class="card-body d-flex flex-column">

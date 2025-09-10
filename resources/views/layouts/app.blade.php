@@ -13,10 +13,14 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">Deal224</a>
-            @if (!in_array(Route::currentRouteName(), ['home']))
-                <a href="{{ route('home') }}" class="btn btn-warning">Accueil</a>
-            @endif
+        <img src="{{ asset('storage/images/deal.png') }}" alt="mon logo" style="height:60px; width:60px; object-fit:cover; border-radius:50%; border:2px solid #fff; margin-right:10px;">
+            <div class="d-flex align-items-center ms-3">
+                @if (!in_array(Route::currentRouteName(), ['home']))
+                    <a href="{{ route('home') }}" class="btn btn-warning">
+                        Accueil
+                    </a>
+                @endif
+            </div>
 
             
             <!-- Menu burger pour petits écrans -->

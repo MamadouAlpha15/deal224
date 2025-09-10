@@ -1,94 +1,99 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
-        @csrf
+   
 
-      <!-- Photo de profil -->
-<div class="mt-4">
-    <x-input-label for="profile_photo" :value="__('Photo de profil')" />
+    <div class="card shadow-sm border-0 mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <h4 class="card-title mb-4 text-center">Créer un compte</h4>
 
-    <input id="profile_photo"
-           type="file"
-           name="profile_photo"
-           class="block mt-1 w-full"
-           accept="image/*"
-           onchange="previewProfilePhoto(event)">
+            <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
+                @csrf
 
-    <!-- Zone d'aperçu -->
-    <div class="mt-3">
-        <img id="profile_preview"
-             src="{{ asset('storage/profile_placeholder.png') }}" 
-             alt="Aperçu photo"
-             class="rounded-full border"
-             style="width: 100px; height: 100px; object-fit: cover;">
+                {{-- Aperçu photo --}}
+                <div class="mb-3 text-center">
+                    <img id="profile_preview"
+                         src="{{ asset('storage/profile_placeholder.png') }}"
+                         alt="Aperçu photo"
+                         class="rounded-circle border mb-2"
+                         style="width: 100px; height: 100px; object-fit: cover;">
+                </div>
+
+                {{-- Upload photo --}}
+                <div class="mb-3">
+                    <label for="profile_photo" class="form-label">Photo de profil</label>
+                    <input id="profile_photo" type="file" name="profile_photo"
+                           class="form-control @error('profile_photo') is-invalid @enderror"
+                           accept="image/*"
+                           onchange="previewProfilePhoto(event)">
+                    @error('profile_photo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Script preview photo --}}
+                <script>
+                    function previewProfilePhoto(event) {
+                        const input = event.target;
+                        const preview = document.getElementById('profile_preview');
+                        if (input.files && input.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = e => preview.src = e.target.result;
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
+                </script>
+
+                {{-- Nom --}}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nom complet</label>
+                    <input id="name" type="text" name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name') }}" required autofocus>
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Email --}}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Adresse email</label>
+                    <input id="email" type="email" name="email"
+                           class="form-control @error('email') is-invalid @enderror"
+                           value="{{ old('email') }}" required>
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Password --}}
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <input id="password" type="password" name="password"
+                           class="form-control @error('password') is-invalid @enderror"
+                           required>
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Confirm Password --}}
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation"
+                           class="form-control @error('password_confirmation') is-invalid @enderror"
+                           required>
+                    @error('password_confirmation')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Boutons --}}
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('login') }}" class="small">Déjà un compte ?</a>
+                    <button type="submit" class="btn btn-primary">
+                        S’enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <x-input-error :messages="$errors->get('profile_photo')" class="mt-2" />
-</div>
-
-<!-- Script aperçu  de la phto -->
-<script>
-    function previewProfilePhoto(event) {
-        const input = event.target;
-        const preview = document.getElementById('profile_preview');
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-</script>
-
-
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
-
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('avez vous un compte?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __("s'enregistré") }}
-            </x-primary-button>
-        </div>
-    </form>
 </x-guest-layout>

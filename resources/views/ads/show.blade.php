@@ -8,31 +8,46 @@
     <div class="row">
         <div class="col-md-7">
 
-            {{-- Carrousel d'images --}}
-            @if($ad->images->count())
-               <div id="carouselAd" class="carousel slide mb-3" data-bs-ride="false">
+           {{-- Carrousel d'images --}}
+@if($ad->images->count())
+   <div id="carouselAd" class="carousel slide mb-3" data-bs-ride="false">
 
-                    <div class="carousel-inner">
-                        @foreach($ad->images as $index => $image)
-                            <div class="carousel-item @if($index == 0) active @endif">
-                                <img src="{{ asset('storage/' . $image->path) }}" 
-     class="d-block w-100 img-fluid" 
-     alt="Image {{ $index + 1 }}" 
-     style="height: auto; max-height: 600px; object-fit: cover;">
+        {{-- Indicateurs --}}
+        <div class="carousel-indicators">
+            @foreach($ad->images as $index => $image)
+                <button type="button"
+                        data-bs-target="#carouselAd"
+                        data-bs-slide-to="{{ $index }}"
+                        class="{{ $index === 0 ? 'active' : '' }}"
+                        aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                        aria-label="Slide {{ $index + 1 }}">
+                </button>
+            @endforeach
+        </div>
 
-                            </div>
-                        @endforeach
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselAd" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselAd" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
+        {{-- Images --}}
+        <div class="carousel-inner">
+            @foreach($ad->images as $index => $image)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <img src="{{ asset('storage/' . $image->path) }}" 
+                         class="d-block w-100 img-fluid" 
+                         alt="Image {{ $index + 1 }}" 
+                         style="height: auto; max-height: 600px; object-fit: cover;">
                 </div>
-            @else
-                <img src="{{ asset('images/no-image.png') }}" class="img-fluid mb-3" alt="Aucune image disponible">
-            @endif
+            @endforeach
+        </div>
+
+        {{-- Flèches précédent / suivant --}}
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselAd" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselAd" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+@else
+    <img src="{{ asset('images/no-image.png') }}" class="img-fluid mb-3" alt="Aucune image disponible">
+@endif
 
         </div>
 
