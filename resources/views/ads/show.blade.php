@@ -71,16 +71,16 @@
             <p class="text-muted mb-0 text-secondary">
                 📍Lieu: <strong class="text-primary">{{ $ad->location ?? 'Lieu non précisé' }}</strong> </p>
             <hr>
-            {{-- WhatsApp --}}
-                        @if(!empty($ad->whatsapp))
-                            @php
-                                $message = urlencode("Bonjour, je suis intéressé par votre annonce : {$ad->title}. Voici le lien : " . route('annonces.show', $ad->id));
-                                $whatsappUrl = "https://wa.me/{$ad->whatsapp}?text={$message}";
-                            @endphp
-                            <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-sm btn-success d-flex align-items-center gap-2 mt-1">
-                                <i class="bi bi-whatsapp"></i> Contacter via WhatsApp
-                            </a>
-                        @endif
+           {{-- 📲 Bouton WhatsApp qui ouvre la discussion --}}
+@if(!empty($ad->whatsapp))
+    <a href="https://wa.me/{{ preg_replace('/\D/', '', $ad->whatsapp) }}" 
+       target="_blank"
+       class="btn btn-success btn-sm d-flex align-items-center gap-2 mt-2">
+        <i class="bi bi-whatsapp fs-5"></i>
+        Contactez-moi sur WhatsApp
+    </a>
+@endif
+
             <hr>
 
             <h5>Description</h5>

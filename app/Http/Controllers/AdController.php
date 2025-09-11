@@ -58,7 +58,7 @@ class AdController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer',
+            'price' => 'required|string',
             'phone' => 'nullable|string|max:20',
             'whatsapp' => 'required|string|max:20',
             'location' => 'nullable|string|max:255',
@@ -66,6 +66,9 @@ class AdController extends Controller
             'profile_photo' => 'image|mimes:jpeg,png,jpg|max:51200',
             'currency' => 'required|in:GNF,EUR,USD',
         ]);
+        // ⚡ Nettoyer le prix (supprimer points, espaces, virgules, etc.)
+$validated['price'] = preg_replace('/[^\d]/', '', $request->input('price'));
+
 
         $validated['user_id'] = Auth::id(); // Associe l'annonce à l'utilisateur
 
@@ -115,7 +118,7 @@ class AdController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|string',
             'phone' => 'nullable|string|max:20',
             'whatsapp' => 'required|string|max:20',
             'location' => 'nullable|string|max:255',
@@ -131,6 +134,8 @@ class AdController extends Controller
             return redirect()->route('annonces.index')
                              ->with('error', 'Vous ne pouvez pas modifier cette annonce.');
         }
+        //⚡ Nettoyer le prix (supprimer tout sauf les chiffres)
+    $validated['price'] = preg_replace('/[^\d]/', '', $request->input('price'));
 
         // 🔹 Stocke la photo de profil si présente
         if ($request->hasFile('profile_photo')) {

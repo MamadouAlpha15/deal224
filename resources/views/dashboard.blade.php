@@ -2,10 +2,20 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">📋 Mes annonces</h2>
-        <a href="{{ route('annonces.create') }}" class="btn btn-success">➕ Nouvelle annonce</a>
+    {{-- ⚠️ Message important --}}
+    <div class="alert alert-warning text-center fw-bold mb-4">
+        ⚠️ Une fois que vous avez <span class="text-success">vendu un produit</span>, 
+        <span class="text-danger">supprimez-le</span> pour qu’il disparait de l’accueil.
     </div>
+
+    {{-- Titre + bouton Nouvelle annonce --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="mb-0 text-center text-md-start">📋 Mes annonces</h2>
+        <a href="{{ route('annonces.create') }}" class="btn btn-success btn-lg w-100 w-md-auto">
+            ➕ Nouvelle annonce
+        </a>
+    </div>
+</div>
 <!--
     {{-- Boutons Booster / Chat --}}
     <div class="d-flex justify-content-center my-4 gap-2">
@@ -22,12 +32,19 @@
     </div>
 !-->
 
-    {{-- Message de succès --}}
-
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès 🎉',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endpush
+@endif
     <div class="row">
         @forelse($ads as $ad)
             <div class="col-sm-6 col-md-4 mb-4">
@@ -123,17 +140,15 @@
         📍 {{ $ad->location ?? 'Lieu non précisé' }}
     </p>
 
-                        {{-- WhatsApp --}}
-                        @if(!empty($ad->whatsapp))
-                            @php
-                                $message = urlencode("Bonjour, je suis intéressé par votre annonce : {$ad->title}. Voici le lien : " . route('annonces.show', $ad->id));
-                                $whatsappUrl = "https://wa.me/{$ad->whatsapp}?text={$message}";
-                            @endphp
-                            <a href="{{ $whatsappUrl }}" target="_blank" 
-                               class="btn btn-sm btn-success d-flex align-items-center gap-2 mt-1">
-                                <i class="bi bi-whatsapp"></i> Contacter via WhatsApp
-                            </a>
-                        @endif
+                     {{-- 📲 Bouton WhatsApp qui ouvre la discussion --}}
+@if(!empty($ad->whatsapp))
+    <a href="https://wa.me/{{ preg_replace('/\D/', '', $ad->whatsapp) }}" 
+       target="_blank"
+       class="btn btn-success btn-sm d-flex align-items-center gap-2 mt-2">
+        <i class="bi bi-whatsapp fs-5"></i>
+        Contactez-moi sur WhatsApp
+    </a>
+@endif
 
                         <p class="text-muted mt-2">📍 {{ $ad->location ?? 'Lieu non précisé' }}</p>
 

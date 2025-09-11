@@ -1,12 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>✏️ Modifier l'annonce</h2>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">✏️ Modifier l'annonce</h2>
 
+    {{-- ⚠️ Erreurs de validation --}}
     @if ($errors->any())
         <div class="alert alert-danger">
-            <ul>
+            <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -14,85 +15,91 @@
         </div>
     @endif
 
+    {{-- 📝 Formulaire --}}
     <form id="edit-form" action="{{ route('annonces.update', $ad) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-    
-
+        {{-- Titre --}}
         <div class="mb-3">
             <label class="form-label">Titre</label>
-            <input type="text" name="title" class="form-control" value="{{ $ad->title }}" required>
+            <input type="text" name="title" class="form-control form-control-lg" value="{{ $ad->title }}" required>
         </div>
 
+        {{-- Description --}}
         <div class="mb-3">
             <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="5" required>{{ $ad->description }}</textarea>
+            <textarea name="description" class="form-control form-control-lg" rows="4" required>{{ $ad->description }}</textarea>
         </div>
 
-       <div class="mb-3">
-    <label class="form-label">Prix</label>
-    <div class="input-group">
-        <input type="number" name="price" class="form-control" value="{{ $ad->price }}" required>
-        <select name="currency" class="form-select" required>
-            <option value="GNF" {{ $ad->currency == 'GNF' ? 'selected' : '' }}>GNF</option>
-            <option value="EUR" {{ $ad->currency == 'EUR' ? 'selected' : '' }}>€ Euro</option>
-            <option value="USD" {{ $ad->currency == 'USD' ? 'selected' : '' }}>$ Dollar</option>
-        </select>
-    </div>
-</div>
-
+        {{-- Prix + devise --}}
         <div class="mb-3">
-            <label class="form-label">Teléphone</label>
-            <input type="text" name="phone" class="form-control" value="{{ $ad->phone }}" required>
+            <label class="form-label">Prix</label>
+            <div class="input-group input-group-lg">
+                <input type="text" name="price" class="form-control" value="{{ $ad->price }}" required>
+                <select name="currency" class="form-select" required>
+                    <option value="GNF" {{ $ad->currency == 'GNF' ? 'selected' : '' }}>GNF</option>
+                    <option value="EUR" {{ $ad->currency == 'EUR' ? 'selected' : '' }}>€ Euro</option>
+                    <option value="USD" {{ $ad->currency == 'USD' ? 'selected' : '' }}>$ Dollar</option>
+                </select>
+            </div>
         </div>
 
-           {{--champ whatsapp --}}
-        <div clas="mb-3"> 
-        <label for="whatssap" class="form-label">WhatsApp</label>
-        <input type="text" name="whatsapp" class="form-control" value="{{ $ad->whatsapp }}" required>
-        
+        {{-- Téléphone --}}
+        <div class="mb-3">
+            <label class="form-label">Téléphone</label>
+            <input type="text" name="phone" class="form-control form-control-lg" value="{{ $ad->phone }}" required>
         </div>
 
+        {{-- WhatsApp --}}
+        <div class="mb-3"> 
+            <label for="whatsapp" class="form-label">WhatsApp</label>
+            <input type="text" name="whatsapp" class="form-control form-control-lg" value="{{ $ad->whatsapp }}" required>
+        </div>
+
+        {{-- Localisation --}}
         <div class="mb-3">
             <label class="form-label">Lieu</label>
-            <input type="adresse" name="location" class="form-control" value="{{ $ad->location }}" required>
+            <input type="text" name="location" class="form-control form-control-lg" value="{{ $ad->location }}" required>
         </div>
 
-        {{-- IMAGES ACTUELLES --}}
+        {{-- Images existantes --}}
         <div class="mb-3">
             <label class="form-label">Images actuelles</label>
             <div id="existing-preview" class="d-flex flex-wrap gap-2">
                 @foreach ($ad->images as $image)
                     <div class="position-relative" data-id="{{ $image->id }}">
                         <img src="{{ asset('storage/' . $image->path) }}" 
-                             class="rounded" 
+                             class="rounded shadow-sm"
                              style="width: 100px; height: 100px; object-fit: cover;">
-                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-existing" style="border-radius: 50%; padding: 0.2rem 0.4rem;">❌</button>
+                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-existing" 
+                                style="border-radius: 50%; padding: 0.2rem 0.4rem;">❌</button>
                         <input type="hidden" name="existing_images[]" value="{{ $image->id }}">
                     </div>
                 @endforeach
             </div>
         </div>
 
-        {{-- NOUVELLES IMAGES --}}
+        {{-- Nouvelles images --}}
         <div class="mb-3">
-            <label class="form-label">Nouvelles images</label>
-            <input type="file" id="image-input" name="images[]" class="form-control" multiple accept="image/*">
+            <label class="form-label">Ajouter de nouvelles images</label>
+            <input type="file" id="image-input" name="images[]" class="form-control form-control-lg" multiple accept="image/*">
             <div id="new-preview" class="mt-3 d-flex flex-wrap gap-2"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+        {{-- ✅ Bouton responsive --}}
+        <button type="submit" class="btn btn-primary btn-lg w-100">💾 Mettre à jour l'annonce</button>
     </form>
 </div>
 
+{{-- Script --}}
 <script>
     const existingPreview = document.getElementById('existing-preview');
     const imageInput = document.getElementById('image-input');
     const newPreview = document.getElementById('new-preview');
     let newImages = [];
 
-    // Supprimer image existante visuellement et retirer le champ hidden
+    // Supprimer image existante
     existingPreview.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-existing')) {
             const container = e.target.closest('[data-id]');
@@ -100,7 +107,7 @@
         }
     });
 
-    // Aperçu des nouvelles images sélectionnées avec croix rouge
+    // Prévisualisation nouvelles images
     imageInput.addEventListener('change', function (event) {
         const files = Array.from(event.target.files);
         newImages = [...newImages, ...files];
@@ -114,13 +121,15 @@
             reader.onload = function (e) {
                 const wrapper = document.createElement('div');
                 wrapper.style.position = 'relative';
+                wrapper.style.width = '100px';
+                wrapper.style.height = '100px';
 
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                img.style.width = '100px';
-                img.style.height = '100px';
+                img.style.width = '100%';
+                img.style.height = '100%';
                 img.style.objectFit = 'cover';
-                img.classList.add('rounded');
+                img.classList.add('rounded', 'shadow-sm');
 
                 const removeBtn = document.createElement('button');
                 removeBtn.innerHTML = '❌';
@@ -144,10 +153,10 @@
         });
     }
 
-    // Soumettre le bon fichier final
+    // Soumission du formulaire avec nouvelles images
     document.getElementById('edit-form').addEventListener('submit', function (e) {
         const input = document.getElementById('image-input');
-        input.remove(); // Supprime l'ancien input
+        if (input) input.remove();
 
         const dataTransfer = new DataTransfer();
         newImages.forEach(file => dataTransfer.items.add(file));
@@ -160,23 +169,6 @@
         newInput.files = dataTransfer.files;
 
         e.target.appendChild(newInput);
-    });
-
-
-    // Aperçu pour la photo de profil
-    const profileInput = document.querySelector('input[name="profile_photo"]');
-    const profileImg = document.getElementById('profile-img');
-
-    profileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            profileImg.src = e.target.result;
-            profileImg.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
     });
 </script>
 @endsection

@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->string('title'); // Titre de l’annonce
         $table->text('description'); // Description détaillée
-        $table->integer('price'); // Prix de l’article
+        $table->string('price'); // Prix de l’article
         $table->string('image')->nullable(); // Image de l’article
         $table->unsignedBigInteger('user_id'); // L’utilisateur qui a posté l’annonce
 

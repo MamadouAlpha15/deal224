@@ -2,13 +2,13 @@
 {{-- 🧱 Hérite du layout principal "app.blade.php" --}}
 
 @section('content') 
-<div class="container">
-    <h2>➕ Nouvelle annonce</h2>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">➕ Nouvelle annonce</h2>
 
     {{-- ⚠️ Affiche les erreurs de validation --}}
     @if ($errors->any())
         <div class="alert alert-danger">
-            <ul>
+            <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -17,46 +17,49 @@
     @endif
 
     {{-- 📝 Infos pour l’utilisateur --}}
-<div class="alert alert-info">
-    ℹ️ <strong>Important :</strong>  
-    <ul class="mb-0">
-        <li>Chaque annonce correspond à <strong>un seul produit avec un seul prix</strong>.  
-            👉 Exemple : un parfum Dior = 1 annonce avec son prix.  
-            👉 Un autre parfum Chanel = une autre annonce avec son prix.  
-            👉 Un pantalon et une paire de lunettes doivent avoir <strong>2 annonces séparées</strong>.
-        </li>
-        <li>Vous pouvez ajouter <strong>plusieurs photos du même produit</strong> pour montrer tous ses détails.  
-            👉 Exemple : voiture (extérieur, intérieur, moteur), maison (salon, chambres, façade), téléphone (avant, arrière).  
-        </li>
-        <li><span class="text-success">Plus vos photos sont variées et claires, plus vos clients auront confiance et contacteront rapidement ✅</span></li>
-        <li><span class="text-danger">⚠️ Ne mélangez pas plusieurs produits différents dans une seule annonce</span> (exemple : vêtements + chaussures + lunettes dans la même annonce).  
-            👉 Créez une annonce pour <strong>chaque produit</strong>.
-        </li>
-    </ul>
-</div>
-
+    <div class="alert alert-info mb-4">
+        ℹ️ <strong>Important :</strong>  
+        <ul class="mb-0">
+            <li>Chaque annonce correspond à <strong>un seul produit avec un seul prix</strong>.  
+                👉 Exemple : un parfum Dior = 1 annonce avec son prix.  
+                👉 Un autre parfum Chanel = une autre annonce avec son prix.  
+                👉 Un pantalon et une paire de lunettes doivent avoir <strong>2 annonces séparées</strong>.
+            </li>
+            <li>Vous pouvez ajouter <strong>plusieurs photos du même produit</strong> pour montrer tous ses détails.  
+                👉 Exemple : voiture (extérieur, intérieur, moteur), maison (salon, chambres, façade), téléphone (avant, arrière).  
+            </li>
+            <li><span class="text-success">Plus vos photos sont variées et claires, plus vos clients auront confiance et contacteront rapidement ✅</span></li>
+            <li><span class="text-danger">⚠️ Ne mélangez pas plusieurs produits différents dans une seule annonce</span> (exemple : vêtements + chaussures + lunettes dans la même annonce).  
+                👉 Créez une annonce pour <strong>chaque produit</strong>.
+            </li>
+        </ul>
+    </div>
 
     {{-- 📝 Formulaire --}}
-    <form id="ad-form" action="{{ route('annonces.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="ad-form" action="{{ route('annonces.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation">
         @csrf
 
         {{-- Champ titre --}}
         <div class="mb-3">
             <label class="form-label">Titre</label>
-            <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
+            <input type="text" name="title" class="form-control form-control-lg" value="{{ old('title') }}" required placeholder="Ex: voiture , maison, cosmétique, etc...">
         </div>
 
         {{-- Champ description --}}
         <div class="mb-3">
             <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="5" required>{{ old('description') }}</textarea>
+            <textarea name="description" class="form-control form-control-lg" rows="4" required>{{ old('description') }}</textarea>
         </div>
 
         {{-- Champ prix + monnaie --}}
         <div class="mb-3">
             <label class="form-label">Prix</label>
-            <div class="input-group">
-                <input type="number" name="price" class="form-control" value="{{ old('price') }}" required>
+            <div class="input-group input-group-lg">
+                <input type="text" name="price" class="form-control" 
+       value="{{ old('price') }}" required 
+       placeholder="Ex: 1500000 ou 1 500 000 ou 1.500.000">
+
+
                 <select name="currency" class="form-select" required>
                     <option value="GNF" {{ old('currency') == 'GNF' ? 'selected' : '' }}>GNF</option>
                     <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>€ Euro</option>
@@ -68,37 +71,33 @@
         {{-- Téléphone --}}
         <div class="mb-3">
             <label class="form-label">Téléphone</label>
-            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
+            <input type="text" name="phone" class="form-control form-control-lg" value="{{ old('phone') }}" required>
         </div>
 
         {{-- WhatsApp --}}
         <div class="mb-3"> 
             <label for="whatsapp" class="form-label">WhatsApp</label>
-            <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp') }}" required>
+            <input type="text" name="whatsapp" class="form-control form-control-lg" value="{{ old('whatsapp') }}" required>
         </div>
 
         {{-- Localisation --}}
         <div class="mb-3">
             <label class="form-label">Lieu</label>
-            <input type="text" name="location" class="form-control" value="{{ old('location') }}" required>
+            <input type="text" name="location" class="form-control form-control-lg" value="{{ old('location') }}" required>
         </div> 
 
         {{-- Images --}}
         <div class="mb-3">
             <label class="form-label">Images du produit (plusieurs possibles)</label>
-            <input type="file" 
-                   id="image-input" 
-                   name="images[]" 
-                   class="form-control" 
-                   multiple 
-                   accept="image/*">
+            <input type="file" id="image-input" name="images[]" class="form-control form-control-lg" multiple accept="image/*">
             <small class="text-muted">Ajoutez plusieurs photos pour mieux présenter votre produit.</small>
 
             {{-- 🖼️ Zone d’aperçu --}}
             <div id="preview" class="mt-3 d-flex flex-wrap gap-2"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Publier</button>
+        {{-- ✅ Bouton responsive --}}
+        <button type="submit" class="btn btn-primary btn-lg w-100">📢 Publier mon annonce</button>
     </form>
 </div>
 
@@ -121,13 +120,15 @@
             reader.onload = (e) => {
                 const wrapper = document.createElement('div');
                 wrapper.style.position = 'relative';
+                wrapper.style.width = '100px';
+                wrapper.style.height = '100px';
 
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                img.style.width = '100px';
-                img.style.height = '100px';
+                img.style.width = '100%';
+                img.style.height = '100%';
                 img.style.objectFit = 'cover';
-                img.classList.add('rounded');
+                img.classList.add('rounded', 'shadow-sm');
 
                 const removeBtn = document.createElement('button');
                 removeBtn.innerHTML = '❌';

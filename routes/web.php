@@ -7,6 +7,7 @@ use App\Models\Ad;
 use App\Http\Controllers\BoostController;
 use App\Http\Controllers\MessageController;
 use App\Models\BoostPayment;
+use App\Http\Controllers\ChangeController;
 
 
 Route::get('/dashboard', function () {
@@ -83,6 +84,8 @@ Route::delete('/user/boost/{payment}/messages', [MessageController::class, 'dele
 Route::delete('/superadmin/boost/delete-all-confirmed', [BoostController::class, 'deleteAllConfirmedBoosts'])
     ->name('superadmin.boost.deleteAllConfirmed');
 ;
+Route::put('/profile/photo', [ChangeController::class, 'updatePhoto'])
+    ->name('profile.update.photo');
 
 });
 
