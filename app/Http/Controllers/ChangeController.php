@@ -11,7 +11,7 @@ class ChangeController extends Controller
      public function updatePhoto(Request $request)
     {
         $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg|',
         ]);
 
         $user = Auth::user();

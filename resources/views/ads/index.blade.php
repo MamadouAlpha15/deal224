@@ -16,8 +16,8 @@
         </a>
     </div>
 </div>
-<!--
-    {{-- Boutons Booster / Chat --}}
+
+   <!-- {{-- Boutons Booster / Chat --}}
     <div class="d-flex justify-content-center my-4 gap-2">
         <a href="{{ route('boost') }}" class="btn btn-info btn-lg btn-responsive">
             🚀 Booster mes annonces
@@ -30,8 +30,8 @@
 @endif
 
     </div>
-!-->
 
+!-->
 
 
     @if(session('success'))
@@ -155,4 +155,30 @@
     }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+    function checkUnreadMessages() {
+        fetch("{{ route('user.unread-messages') }}")
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('message-badge');
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    // Vérifie toutes les 10 secondes
+    setInterval(checkUnreadMessages, 10000);
+
+    // Vérifie au chargement
+    checkUnreadMessages();
+</script>
+@endpush
+
 @endsection

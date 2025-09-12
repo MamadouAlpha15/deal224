@@ -100,7 +100,7 @@
 
               {{-- Champ upload --}}
               <input type="file" name="profile_photo" id="profile-photo-input" 
-                     class="form-control" accept="image/*">
+                     class="form-control" accept="image/*" required>
 
               {{-- Aperçu --}}
               <div id="preview-container" class="mt-3" style="display:none;">
@@ -140,5 +140,35 @@
         }
     });
     </script>
+
+    <!-- SweetAlert2 pour succès et erreurs -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès 🎉',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur ⚠️',
+                html: `
+                    <ul style="text-align:left;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                `,
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
 </body>
 </html>

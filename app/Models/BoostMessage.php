@@ -19,7 +19,7 @@ class BoostMessage extends Model
     * @method User user()              Récupère l'utilisateur ayant envoyé le message boost.
     * @method BoostPayment boostPayment() Récupère le paiement boost associé au message.
      */
-    protected $fillable = ['boost_payment_id', 'user_id', 'message'];
+    protected $fillable = ['boost_payment_id', 'user_id', 'message', 'read'];
 
     public function user() {
         return $this->belongsTo(User::class);
